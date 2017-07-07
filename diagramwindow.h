@@ -18,20 +18,15 @@ class Yuan;
 class Rec;
 class TakeoffNode;
 
-/*******************************************************************
- * Class name: DiagramWindow
- * Base class: QMainWindow
- * Desciption:This is a class for developers, and determines some
- *     to follow.
-******************************************************************/
-class DiagramWindow : public QMainWindow
+class DiagramWindow : public QMainWindow//继承主程序窗口
+        //QMainWindow类提供一个有菜单条、锚接窗口（例如工具条）和一个状态条的主应用程序窗口。 http://www.kuqin.com/qtdocument/qmainwindow.html
 {
-    Q_OBJECT
+    Q_OBJECT//Q_OBJECT宏的作用  只有加入了Q_OBJECT，你才能使用QT中的signal和slot机制
 
 public:
     DiagramWindow();
 
-    QSize sizeHint() const;
+    QSize sizeHint() const;//QSize定义了一个二维对象的大小。。。。。。还未实现
 
     Node *selectedNode() const;
     NewNode *selectedNewNode() const;
