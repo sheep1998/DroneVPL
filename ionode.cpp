@@ -1,13 +1,14 @@
 /*******************************************************************
  * File:ionode.cpp
- * Author:
- * Desciption:This is a cpp file for developers, including many
- *     circumstances you may encounter during development.
+ * Author: Ryan Feng
+ * Description: This file includes the realization of class 
+ *        IoNode. IoNode is a node which represents I/O operations.
 ******************************************************************/
 
 #include "ionode.h"
 #include "yuan.h"
 #include "link.h"
+#include "rec.h"
 
 /*******************************************************************
  * Function name: IoNode()
@@ -90,13 +91,20 @@ QPainterPath IoNode::shape() const
                       roundness(rect.height()));
     return path;
 }
-
 /*******************************************************************
  * Function name: paint()
- * Description: You can see the details of this function in
- *     computenode.cpp
- * Callee:
- * Inputs:
+ * Description: This function  paints the contents of an item in
+ *     local coordinates.
+ * Callee: QPen::pen(), QPainter::setPen(), QPainter::setBrush()
+ *         QPainter::drowRoundRect(), QPainter::drawText()
+ * Inputs: QPainter paint
+ *         QStyleOptionGraphicsItem *option - provides style options
+ *             for the item, such as its state, exposed area and
+ *             its level-of-detail hints.
+ *         QWidget *widget - The widget argument is optional. If
+ *             provided, it points to the widget that is being painted
+ *             on; otherwise, it is 0. For cached painting, widget is
+ *             always 0.
  * Outputs:
 ******************************************************************/
 void IoNode::paint(QPainter *painter,
@@ -130,27 +138,33 @@ void IoNode::paint(QPainter *painter,
 ******************************************************************/
 QVariant IoNode::itemChange(GraphicsItemChange change, const QVariant &value)
 {
-    if (change & ItemPositionHasChanged) {
-        yuan->setPos(pos().x(),
-                     pos().y() + outlineRect().height()/2 + yuan->boundingRect().height()/2);
-        foreach (Link *link, yuan->myLinks)
-        {link->trackYuans();update();}
+    if (change & ItemPositionHasChanged){
+        if(this->collidingItems().isEmpty()||(this->collidingItems().count()==1&&dynamic_cast<Rec *>(this->collidingItems().first())!=0) )
+       {
+            yuan->setPos(pos().x(),
+                         pos().y() + outlineRect().height()/2 + yuan->boundingRect().height()/2);
+            foreach (Link *link, yuan->myLinks)
+            {link->trackYuans();update();}
 
-        yuan2->setPos(pos().x() - outlineRect().width()/2 - yuan2->outlineRect().width()/2,
-                     pos().y());
-        foreach (Link *link, yuan2->myLinks)
-        {link->trackYuans();update();}
+            yuan2->setPos(pos().x() - outlineRect().width()/2 - yuan2->outlineRect().width()/2,
+                         pos().y());
+            foreach (Link *link, yuan2->myLinks)
+            {link->trackYuans();update();}
 
-        item->setPos(pos().x() - outlineRect().width()/2,
-                     pos().y() - outlineRect().height()/2 - item->boundingRect().height());
+            item->setPos(pos().x() - outlineRect().width()/2,
+                         pos().y() - outlineRect().height()/2 - item->boundingRect().height());
 
-        node2->setPos(pos().x() + outlineRect().width()/2 + node2->outlineRect().width()/2,
-                      pos().y());
-        node1->setPos(pos().x() + outlineRect().width()/2 + node1->outlineRect().width()/2,
-                      node2->pos().y() - node2->outlineRect().height());
-        node3->setPos(pos().x() + outlineRect().width()/2 + node3->outlineRect().width()/2,
-                      node2->pos().y() + node2->outlineRect().height());
-    }
+            node2->setPos(pos().x() + outlineRect().width()/2 + node2->outlineRect().width()/2,
+                          pos().y());
+            node1->setPos(pos().x() + outlineRect().width()/2 + node1->outlineRect().width()/2,
+                          node2->pos().y() - node2->outlineRect().height());
+            node3->setPos(pos().x() + outlineRect().width()/2 + node3->outlineRect().width()/2,
+                          node2->pos().y() + node2->outlineRect().height());
+       }
+        else{
+            setPos(node2->x()- outlineRect().width()/2 -node2->outlineRect().width()/2,
+                   node2->y());
+        }}
     return QGraphicsItem::itemChange(change, value);
 }
 
@@ -215,10 +229,12 @@ void IoSmallNode::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 
 /*******************************************************************
  * Function name: itemChange()
- * Description: You can see the details of this function in
- *     computenode.cpp
- * Callee:
- * Inputs:
+ * Description: This function is to notify custom items that some
+ *     part of the item's state changes.
+ * Callee: Yuan::setPos(), Link::trackYuans(), setPos()
+ * Inputs: GraphicsItemChange change - the parameter of the item
+ *             that is changing
+ *         QVariant &value - new value
  * Outputs:
 ******************************************************************/
 QVariant IoSmallNode::itemChange(GraphicsItemChange change, const QVariant &value)

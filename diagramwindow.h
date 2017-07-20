@@ -3,6 +3,10 @@
 
 #include <QMainWindow>
 #include <QPair>
+#include <QEvent>
+#include <QMouseEvent>
+
+#include "scene.h"
 
 class QAction;
 class QGraphicsItem;
@@ -21,8 +25,8 @@ class TakeoffNode;
 /*******************************************************************
  * Class name: DiagramWindow
  * Base class: QMainWindow
- * Desciption:This is a class for developers, and determines some
- *     to follow.
+ * Description: This is the declaration of class DiagramWindow.
+ *         DiagramWindow is the main window of DroneVPL.
 ******************************************************************/
 class DiagramWindow : public QMainWindow
 {
@@ -35,6 +39,22 @@ public:
 
     Node *selectedNode() const;
     NewNode *selectedNewNode() const;
+
+    int pasteOffset;
+
+    int minZ;
+    int maxZ;
+    int seqNumber;
+    int varNodeNum;  //计数varNode,命名每个varNode,下同
+    int takeoffNodeNum;
+    int landonNodeNum;
+    int vardefNodeNum;
+    int computeNodeNum;
+    int ioNodeNum;
+    int recNodeNum;
+    int linkNodeNum;
+    int need_to_set = 0;
+    int selected_Index=0;
 
 public slots:
     void setDirty(bool on=true);
@@ -88,6 +108,7 @@ private:
     void createActions();
     void createMenus();
     void createToolBars();
+    void createWidgetConditionBar();
     void setZValue(int z);
     void setupNode(Node *node);
     void setupNewNode(NewNode *newnode);
@@ -155,21 +176,10 @@ private:
     QAction *propertiesAction;
 
     QPrinter *printer;
-    QGraphicsScene *scene;
-    QGraphicsView *view;
-    int pasteOffset;
+   QGraphicsView *view;
+   newscene* scene;
 
-    int minZ;
-    int maxZ;
-    int seqNumber;
-    int varNodeNum;  //计数varNode,命名每个varNode,下同
-    int takeoffNodeNum;
-    int landonNodeNum;
-    int vardefNodeNum;
-    int computeNodeNum;
-    int ioNodeNum;
-    int recNodeNum;
-    int linkNodeNum;
+    QMouseEvent *e;
 };
 
 #endif

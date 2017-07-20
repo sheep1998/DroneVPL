@@ -1,8 +1,9 @@
 /*******************************************************************
  * File:diagramwindow.cpp
- * Author:
- * Desciption:This is a cpp file for developers, including many
- *     circumstances you may encounter during development.
+ * Author: Ryan Feng
+ * Description: This file includes the realization of class 
+ *        DiagramWindow. DiagramWindow is the main window of 
+ *        DroneVPL.
 ******************************************************************/
 
 #include <QtGui>
@@ -25,6 +26,7 @@
 #include "rec.h"
 #include "propertiesdialog.h"
 #include "itemtypes.h"
+#include "widgetcondition.h"
 
 const int StatusTimeout = AQP::MSecPerSecond * 30;
 const QString MostRecentFile("MostRecentFile");
@@ -34,7 +36,7 @@ const QString MimeType = "application/vnd.qtrac.pagedesigner";
 const int OffsetIncrement = 5;
 
 /*******************************************************************
- * Function name: ComputeNode()
+ * Function name: DiagramWindow()
  * Description: This is a constructor of DiagramWindow class
  * Callee: creatActions(), createMenus(), createToolBars()
  * Inputs:
@@ -43,11 +45,16 @@ const int OffsetIncrement = 5;
 DiagramWindow::DiagramWindow()
 {
     printer = new QPrinter(QPrinter::HighResolution);
-    scene = new QGraphicsScene(0, 0, 1000, 1000);
-    //scene = new QGraphicsScene;
+     // scene = new QGraphicsScene(0, 0,1000,1000);
+     scene = new newscene;
+   // scene = new QGraphicsScene;
 
-    view = new QGraphicsView;
+       view = new QGraphicsView;
+  // view = new newview;
     view->setScene(scene);
+     setMouseTracking(true);
+
+
     view->setDragMode(QGraphicsView::RubberBandDrag);
     view->setRenderHints(QPainter::Antialiasing
                          | QPainter::TextAntialiasing);
@@ -62,12 +69,13 @@ DiagramWindow::DiagramWindow()
     createActions();
     createMenus();
     createToolBars();
+    createWidgetConditionBar();
 
     connect(scene, SIGNAL(selectionChanged()),
             this, SLOT(updateActions()));
 
-    setWindowTitle(tr("Diagram"));
-    updateActions();
+        setWindowTitle(tr("Diagram"));
+        updateActions();
 }
 
 /*******************************************************************
@@ -392,17 +400,18 @@ void DiagramWindow::filePrint()
 ******************************************************************/
 void DiagramWindow::addTakeoffNode()
 {
-    TakeoffNode *node=new TakeoffNode;
-    node->setText(tr("take off\n %1 s").arg(node->time));
-    setupNode(node);
-    node->yuan->setPos(QPointF((node->pos().x()),
-                       (node->pos().y() + node->outlineRect().height()/2)+node->yuan->boundingRect().height()/2));
-    scene->addItem(node->yuan);
-
-    takeoffNodeNum++;
-    node->controlsId=takeoffNodeNum;
-
-    setDirty(true);
+    selected_Index=1;//1means the 1st object
+    //setCursor(Qt::CrossCursor);//设置鼠标为十字星
+    need_to_set = 1;
+   // TakeoffNode *node=new TakeoffNode;
+   // node->setText(tr("take off\n %1 s").arg(node->time));
+   // setupNode(node);
+   // node->yuan->setPos(QPointF((node->pos().x()),
+   //                    (node->pos().y() + node->outlineRect().height()/2)+node->yuan->boundingRect().height()/2));
+   // scene->addItem(node->yuan);
+   // takeoffNodeNum++;
+   // node->controlsId=takeoffNodeNum;
+   // setDirty(true);
 }
 
 /*******************************************************************
@@ -414,17 +423,20 @@ void DiagramWindow::addTakeoffNode()
 ******************************************************************/
 void DiagramWindow::addLandonNode()
 {
-    LandonNode *node=new LandonNode;
-    node->setText(tr("Land on\n %1 s").arg(node->time));
-    setupNewNode(node);
-    node->yuan2->setPos(QPointF((node->pos().x()),
-                       (node->pos().y() - node->outlineRect().height()/2)-node->yuan2->boundingRect().height()/2));
-    scene->addItem(node->yuan2);
+    need_to_set = 1;
+    selected_Index=2;
+    //setCursor(Qt::CrossCursor);//设置鼠标为十字星
+    //LandonNode *node=new LandonNode;
+    //node->setText(tr("Land on\n %1 s").arg(node->time));
+    //setupNewNode(node);
+    //node->yuan2->setPos(QPointF((node->pos().x()),
+    //                   (node->pos().y() - node->outlineRect().height()/2)-node->yuan2->boundingRect().height()/2));
+    //scene->addItem(node->yuan2);
 
-    landonNodeNum++;
-    node->controlsId=landonNodeNum;
+    //landonNodeNum++;
+    //node->controlsId=landonNodeNum;
 
-    setDirty(true);
+    //setDirty(true);
 }
 
 /*******************************************************************
@@ -436,10 +448,13 @@ void DiagramWindow::addLandonNode()
 ******************************************************************/
 void DiagramWindow::addTranslationNode()
 {
-    TranslationNode *node=new TranslationNode;
-    addTranslation(node);
+    need_to_set = 1;
+    selected_Index=3;
+    //setCursor(Qt::CrossCursor);//设置鼠标为十字星
+    //TranslationNode *node=new TranslationNode;
+    //addTranslation(node);
 
-    setDirty(true);
+    //setDirty(true);
 }
 
 /*******************************************************************
@@ -482,11 +497,14 @@ void DiagramWindow::addTranslation(TranslationNode *node)
 ******************************************************************/
 void DiagramWindow::addRiseNode()
 {
-    TranslationNode *node=new TranslationNode;
-    addTranslation(node);
-    node->box->setCurrentIndex(0);
+    need_to_set = 1;
+    selected_Index = 4;
+    //setCursor(Qt::CrossCursor);//设置鼠标为十字星
+    //TranslationNode *node=new TranslationNode;
+    //addTranslation(node);
+    //node->box->setCurrentIndex(0);
 
-    setDirty(true);
+    //setDirty(true);
 }
 
 /*******************************************************************
@@ -498,11 +516,14 @@ void DiagramWindow::addRiseNode()
 ******************************************************************/
 void DiagramWindow::addFallNode()
 {
-    TranslationNode *node=new TranslationNode;
-    addTranslation(node);
-    node->box->setCurrentIndex(1);
+    need_to_set = 1;
+    selected_Index = 5;
+    //setCursor(Qt::CrossCursor);//设置鼠标为十字星
+    //TranslationNode *node=new TranslationNode;
+    //addTranslation(node);
+    //node->box->setCurrentIndex(1);
 
-    setDirty();
+    //setDirty();
 }
 
 /*******************************************************************
@@ -514,11 +535,14 @@ void DiagramWindow::addFallNode()
 ******************************************************************/
 void DiagramWindow::addAdvanceNode()
 {
-    TranslationNode *node=new TranslationNode;
-    addTranslation(node);
-    node->box->setCurrentIndex(2);
+    need_to_set = 1;
+    selected_Index = 6;
+    //setCursor(Qt::CrossCursor);//设置鼠标为十字星
+    //TranslationNode *node=new TranslationNode;
+    //addTranslation(node);
+    //node->box->setCurrentIndex(2);
 
-    setDirty();
+    //setDirty();
 }
 
 /*******************************************************************
@@ -530,11 +554,14 @@ void DiagramWindow::addAdvanceNode()
 ******************************************************************/
 void DiagramWindow::addBackNode()
 {
-    TranslationNode *node=new TranslationNode;
-    addTranslation(node);
-    node->box->setCurrentIndex(3);
+    //setCursor(Qt::CrossCursor);
+    need_to_set=1;
+    selected_Index = 7;
+    //TranslationNode *node=new TranslationNode;
+    //addTranslation(node);
+    //node->box->setCurrentIndex(3);
 
-    setDirty();
+    //setDirty();
 }
 
 /*******************************************************************
@@ -546,11 +573,14 @@ void DiagramWindow::addBackNode()
 ******************************************************************/
 void DiagramWindow::addRightNode()
 {
-    TranslationNode *node=new TranslationNode;
-    addTranslation(node);
-    node->box->setCurrentIndex(4);
+    //setCursor(Qt::CrossCursor);
+    need_to_set=1;
+    selected_Index = 8;
+    //TranslationNode *node=new TranslationNode;
+    //addTranslation(node);
+    //node->box->setCurrentIndex(4);
 
-    setDirty();
+    //setDirty();
 }
 
 /*******************************************************************
@@ -562,11 +592,14 @@ void DiagramWindow::addRightNode()
 ******************************************************************/
 void DiagramWindow::addLeftNode()
 {
-    TranslationNode *node=new TranslationNode;
-    addTranslation(node);
-    node->box->setCurrentIndex(5);
+    //setCursor(Qt::CrossCursor);
+    need_to_set=1;
+    selected_Index = 9;
+    //TranslationNode *node=new TranslationNode;
+    //addTranslation(node);
+    //node->box->setCurrentIndex(5);
 
-    setDirty();
+    //setDirty();
 }
 
 /*******************************************************************
@@ -578,11 +611,14 @@ void DiagramWindow::addLeftNode()
 ******************************************************************/
 void DiagramWindow::addSomeNode()
 {
-    SomeNode *node=new SomeNode;
-    addSome(node);
-    node->box->setCurrentIndex(0);
+    //setCursor(Qt::CrossCursor);
+    need_to_set=1;
+    selected_Index = 10;
+    //SomeNode *node=new SomeNode;
+    //addSome(node);
+    //node->box->setCurrentIndex(0);
 
-    setDirty();
+    //setDirty();
 }
 
 /*******************************************************************
@@ -624,11 +660,14 @@ void DiagramWindow::addSome(SomeNode *node)
 ******************************************************************/
 void DiagramWindow::addTurnLeftNode()
 {
-    SomeNode *node=new SomeNode;
-    addSome(node);
-    node->box->setCurrentIndex(0);
+    //setCursor(Qt::CrossCursor);
+    need_to_set=1;
+    selected_Index = 11;
+    //SomeNode *node=new SomeNode;
+    //addSome(node);
+    //node->box->setCurrentIndex(0);
 
-    setDirty();
+    //setDirty();
 }
 
 /*******************************************************************
@@ -640,11 +679,14 @@ void DiagramWindow::addTurnLeftNode()
 ******************************************************************/
 void DiagramWindow::addTurnRightNode()
 {
-    SomeNode *node=new SomeNode;
-    addSome(node);
-    node->box->setCurrentIndex(1);
+    //setCursor(Qt::CrossCursor);
+    need_to_set=1;
+    selected_Index = 12;
+    //SomeNode *node=new SomeNode;
+    //addSome(node);
+    //node->box->setCurrentIndex(1);
 
-    setDirty();
+    //setDirty();
 }
 
 /*******************************************************************
@@ -656,11 +698,14 @@ void DiagramWindow::addTurnRightNode()
 ******************************************************************/
 void DiagramWindow::addHangingNode()
 {
-    SomeNode *node=new SomeNode;
-    addSome(node);
-    node->box->setCurrentIndex(2);
+    //setCursor(Qt::CrossCursor);
+    need_to_set=1;
+    selected_Index = 13;
+    //SomeNode *node=new SomeNode;
+    //addSome(node);
+    //node->box->setCurrentIndex(2);
 
-    setDirty();
+    //setDirty();
 }
 
 /*******************************************************************
@@ -672,11 +717,14 @@ void DiagramWindow::addHangingNode()
 ******************************************************************/
 void DiagramWindow::addDelayNode()
 {
-    SomeNode *node=new SomeNode;
-    addSome(node);
-    node->box->setCurrentIndex(3);
+    //setCursor(Qt::CrossCursor);
+    need_to_set=1;
+    selected_Index = 14;
+    //SomeNode *node=new SomeNode;
+    //addSome(node);
+    //node->box->setCurrentIndex(3);
 
-    setDirty();
+    //setDirty();
 }
 
 /*******************************************************************
@@ -688,14 +736,17 @@ void DiagramWindow::addDelayNode()
 ******************************************************************/
 void DiagramWindow::addVarNode()
 {
-    VarNode* node=new VarNode;
-    node->setText(tr("int"));
-    setupNode(node);
+    //setCursor(Qt::CrossCursor);
+    need_to_set=1;
+    selected_Index = 15;
+    //VarNode* node=new VarNode;
+    //node->setText(tr("int"));
+    //setupNode(node);
 
-    varNodeNum++;
-    node->controlsId=varNodeNum;
+    //varNodeNum++;
+    //node->controlsId=varNodeNum;
 
-    setDirty();
+    //setDirty();
 }
 
 /*******************************************************************
@@ -707,58 +758,61 @@ void DiagramWindow::addVarNode()
 ******************************************************************/
 void DiagramWindow::addVardefNode()
 {
-    QList<QGraphicsItem *> items = scene->selectedItems();
-    if(items.count()==0)
-    {
-        VardefNode* node=new VardefNode;
-        node->node=0;
-        node->setPos(QPoint(80 + (100 * (seqNumber % 5)),
-                            80 + (50 * ((seqNumber / 5) % 7))));
-        scene->addItem(node);
-        ++seqNumber;
-        node->yuan2->setPos(node->pos().x(),
-                           node->pos().y() - 16 - node->yuan2->boundingRect().height()/2);
-        node->yuan->setPos(node->pos().x(),
-                           node->pos().y() + 16 + node->yuan->boundingRect().height()/2);
-        scene->addItem(node->yuan);
-        scene->addItem(node->yuan2);
+    //setCursor(Qt::CrossCursor);
+    need_to_set=1;
+    selected_Index = 16;
+    //QList<QGraphicsItem *> items = scene->selectedItems();
+    //if(items.count()==0)
+    //{
+    //    VardefNode* node=new VardefNode;
+    //    node->node=0;
+    //    node->setPos(QPoint(80 + (100 * (seqNumber % 5)),
+    //                        80 + (50 * ((seqNumber / 5) % 7))));
+     //   scene->addItem(node);
+    //    ++seqNumber;
+    //    node->yuan2->setPos(node->pos().x(),
+    //                       node->pos().y() - 16 - node->yuan2->boundingRect().height()/2);
+    //    node->yuan->setPos(node->pos().x(),
+    //                       node->pos().y() + 16 + node->yuan->boundingRect().height()/2);
+    //    scene->addItem(node->yuan);
+    //    scene->addItem(node->yuan2);
 
-        vardefNodeNum++;
-        node->controlsId=vardefNodeNum;
-    }
-    else if(items.count()==1)
-    {
-        VarNode* node=dynamic_cast<VarNode*>(scene->selectedItems().first());
-        if(!node)return;
+     //   vardefNodeNum++;
+    //    node->controlsId=vardefNodeNum;
+   // }
+   // else if(items.count()==1)
+   // {
+    //    VarNode* node=dynamic_cast<VarNode*>(scene->selectedItems().first());
+     //   if(!node)return;
 
-        int flag=0;
-        while(node->flags[node->num])//这个位置已经有了vardefnode
-        {
-            if(flag==6)return;
-            node->num=node->num%6+1;
-            flag++;
-        }
+    //    int flag=0;
+    //    while(node->flags[node->num])//这个位置已经有了vardefnode
+    //    {
+    //        if(flag==6)return;
+    //        node->num=node->num%6+1;
+    //        flag++;
+     //   }
 
         //计算添加的位置
-        int i=node->num%3;
-        int j;
-        if(node->num==0||node->num==2)j=-17;
-        else if(node->num==3||node->num==5)j=17;
-        else if(node->num==1)j=-35;
-        else j=35;
+     //   int i=node->num%3;
+     //   int j;
+    //    if(node->num==0||node->num==2)j=-17;
+     //   else if(node->num==3||node->num==5)j=17;
+    //    else if(node->num==1)j=-35;
+    //    else j=35;
 
-        node->array[node->num]->node=node;//使vardefnode知道它属于varnode
+   //     node->array[node->num]->node=node;//使vardefnode知道它属于varnode
 
-        node->array[node->num]->setPos(node->pos().x() + (1-i)*30,
-                             node->pos().y() + j);
-        node->flags[node->num]=true;
-        scene->addItem(node->array[node->num]);
-        node->num=node->num%6+1;
+     //   node->array[node->num]->setPos(node->pos().x() + (1-i)*30,
+     //                        node->pos().y() + j);
+    //    node->flags[node->num]=true;
+    //    scene->addItem(node->array[node->num]);
+    //    node->num=node->num%6+1;
 
-        vardefNodeNum++;
-        node->controlsId=vardefNodeNum;
-        }
-    setDirty();
+    //    vardefNodeNum++;
+     //   node->controlsId=vardefNodeNum;
+    //    }
+   // setDirty();
 }
 
 /*******************************************************************
@@ -770,41 +824,44 @@ void DiagramWindow::addVardefNode()
 ******************************************************************/
 void DiagramWindow::addComputeNode()
 {
-    ComputeNode *node=new ComputeNode;
-    node->setText(tr("Compute"));
-    QGraphicsItem* item=scene->addWidget(node->box);
-    node->item=item;
-    setupNode(node);
-    node->yuan->setPos(QPointF(node->pos().x(),
-                               node->pos().y() + node->outlineRect().height()/2 +node->yuan->boundingRect().height()/2));
-    node->yuan2->setPos(QPointF(node->pos().x() - node->outlineRect().width()/2 - node->yuan2->outlineRect().width()/2,
-                                node->pos().y()));
-    node->yuan3->setPos(QPointF(node->pos().x() + node->outlineRect().width()/2 + node->yuan3->outlineRect().width()/2,
-                                node->pos().y()));
-    scene->addItem(node->yuan);
-    scene->addItem(node->yuan2);
-    scene->addItem(node->yuan3);
+    //setCursor(Qt::CrossCursor);
+    need_to_set=1;
+    selected_Index = 17;
+    //ComputeNode *node=new ComputeNode;
+    //node->setText(tr("Compute"));
+    //QGraphicsItem* item=scene->addWidget(node->box);
+    //node->item=item;
+    //setupNode(node);
+    //node->yuan->setPos(QPointF(node->pos().x(),
+    //                           node->pos().y() + node->outlineRect().height()/2 +node->yuan->boundingRect().height()/2));
+   // node->yuan2->setPos(QPointF(node->pos().x() - node->outlineRect().width()/2 - node->yuan2->outlineRect().width()/2,
+    //                            node->pos().y()));
+    //node->yuan3->setPos(QPointF(node->pos().x() + node->outlineRect().width()/2 + node->yuan3->outlineRect().width()/2,
+    //                            node->pos().y()));
+    //scene->addItem(node->yuan);
+   // scene->addItem(node->yuan2);
+    //scene->addItem(node->yuan3);
 
-    item->setPos(QPointF(node->pos().x()- item->boundingRect().width()/2,
-                 node->pos().y() - node->outlineRect().height()/2 - item->boundingRect().height()));
-    item->setZValue(node->zValue()+1);
-    node->box->addItem(tr("+"));
-    node->box->addItem(tr("-"));
-    node->box->addItem(tr("*"));
-    node->box->addItem(tr("/"));
-    node->box->addItem(tr("cos"));
-    node->box->addItem(tr("sin"));
-    node->box->addItem(tr("tan"));
-    node->box->addItem(tr("log"));
-    node->box->addItem(tr("e"));
-    node->box->addItem(tr("="));
-    node->box->addItem(tr(">"));
-    node->box->addItem(tr("<"));
+    //item->setPos(QPointF(node->pos().x()- item->boundingRect().width()/2,
+   //              node->pos().y() - node->outlineRect().height()/2 - item->boundingRect().height()));
+   // item->setZValue(node->zValue()+1);
+   // node->box->addItem(tr("+"));
+   // node->box->addItem(tr("-"));
+   // node->box->addItem(tr("*"));
+   // node->box->addItem(tr("/"));
+   // node->box->addItem(tr("cos"));
+   // node->box->addItem(tr("sin"));
+   // node->box->addItem(tr("tan"));
+   // node->box->addItem(tr("log"));
+   // node->box->addItem(tr("e"));
+   // node->box->addItem(tr("="));
+   // node->box->addItem(tr(">"));
+   // node->box->addItem(tr("<"));
 
-    computeNodeNum++;
-    node->controlsId=computeNodeNum;
+   // computeNodeNum++;
+   // node->controlsId=computeNodeNum;
 
-    setDirty();
+   // setDirty();
 }
 
 /*******************************************************************
@@ -816,46 +873,49 @@ void DiagramWindow::addComputeNode()
 ******************************************************************/
 void DiagramWindow::addIoNode()
 {
-    IoNode* node=new IoNode;
-    node->setText(tr("sensor"));
-    QGraphicsItem* item=scene->addWidget(node->box);
-    node->item=item;
-    setupNewNode(node);
+    //setCursor(Qt::CrossCursor);
+    need_to_set=1;
+    selected_Index = 18;
+    //IoNode* node=new IoNode;
+    //node->setText(tr("sensor"));
+   // QGraphicsItem* item=scene->addWidget(node->box);
+    //node->item=item;
+    //setupNewNode(node);
+//
+   // node->yuan->setPos(QPointF(node->pos().x(),
+   //                   (node->pos().y() + node->outlineRect().height()/2 + node->yuan->boundingRect().height()/2)));
+   // node->yuan2->setPos(QPointF(node->pos().x()- node->outlineRect().width()/2 - node->yuan2->outlineRect().width()/2,
+   //                    (node->pos().y())));
+   // scene->addItem(node->yuan);
+   // scene->addItem(node->yuan2);
 
-    node->yuan->setPos(QPointF(node->pos().x(),
-                      (node->pos().y() + node->outlineRect().height()/2 + node->yuan->boundingRect().height()/2)));
-    node->yuan2->setPos(QPointF(node->pos().x()- node->outlineRect().width()/2 - node->yuan2->outlineRect().width()/2,
-                       (node->pos().y())));
-    scene->addItem(node->yuan);
-    scene->addItem(node->yuan2);
-
-    node->node2->setPos(node->pos().x() + node->outlineRect().width()/2 + node->node2->outlineRect().width()/2,
-                        node->pos().y());
-    node->node1->setPos(node->node2->pos().x(),
-                        node->node2->pos().y() - node->node2->outlineRect().height());
-    node->node3->setPos(node->node2->pos().x(),
-                        node->node2->pos().y() + node->node2->outlineRect().height());
-    scene->addItem(node->node2);
-    scene->addItem(node->node1);
-    scene->addItem(node->node3);
-    scene->addItem(node->node2->yuan);
-    scene->addItem(node->node1->yuan);
-    scene->addItem(node->node3->yuan);
+   // node->node2->setPos(node->pos().x() + node->outlineRect().width()/2 + node->node2->outlineRect().width()/2,
+   //                     node->pos().y());
+   // node->node1->setPos(node->node2->pos().x(),
+   //                     node->node2->pos().y() - node->node2->outlineRect().height());
+   // node->node3->setPos(node->node2->pos().x(),
+   //                     node->node2->pos().y() + node->node2->outlineRect().height());
+   // scene->addItem(node->node2);
+   // scene->addItem(node->node1);
+   // scene->addItem(node->node3);
+   // scene->addItem(node->node2->yuan);
+   // scene->addItem(node->node1->yuan);
+   // scene->addItem(node->node3->yuan);
 
 
-    item->setPos(QPointF(node->pos().x()-node->outlineRect().width()/2,
-                 (node->pos().y() - node->outlineRect().height()/2 - item->boundingRect().height())));
-    item->setZValue(node->zValue()+1);
-    node->box->addItem(tr("detection sensor"));
-    node->box->addItem(tr("A sensor"));
-    node->box->addItem(tr("B sensor"));
-    node->box->addItem(tr("delay"));
-    node->box->setCurrentIndex(0);
+   // item->setPos(QPointF(node->pos().x()-node->outlineRect().width()/2,
+   //              (node->pos().y() - node->outlineRect().height()/2 - item->boundingRect().height())));
+   // item->setZValue(node->zValue()+1);
+   // node->box->addItem(tr("detection sensor"));
+   // node->box->addItem(tr("A sensor"));
+   // node->box->addItem(tr("B sensor"));
+   // node->box->addItem(tr("delay"));
+   // node->box->setCurrentIndex(0);
 
-    ioNodeNum++;
-    node->controlsId=ioNodeNum;
+    //ioNodeNum++;
+   // node->controlsId=ioNodeNum;
 
-    setDirty();
+    //setDirty();
 }
 
 /*******************************************************************
@@ -894,32 +954,32 @@ void DiagramWindow::addLink()
 ******************************************************************/
 void DiagramWindow::addRec()
 {
-    Rec *rec=new Rec;
-    QGraphicsItem* item= scene->addWidget(rec->box);
-    rec->item=item;
-    rec->setPos(100,100);
-    scene->addItem(rec);
-    scene->clearSelection();
-    rec->setSelected(true);
+    //setCursor(Qt::CrossCursor);
+    need_to_set=1;
+    selected_Index = 19;
+    //Rec *rec=new Rec;
+    //QGraphicsItem* item= scene->addWidget(rec->box);
+    //rec->item=item;
+    //rec->setPos(100,100);
+    //scene->addItem(rec);
+    //scene->clearSelection();
+    //rec->setSelected(true);
 
-    scene->clearSelection();
-    rec->setSelected(true);
+    //rec->yuan2->setPos(QPointF(rec->pos().x() - rec->outlineRect().height()/2 + item->boundingRect().width()/2,
+     //                          rec->pos().y() - rec->outlineRect().height()/2 +item->boundingRect().height()*1.5));
+    //scene->addItem(rec->yuan2);
 
-    rec->yuan2->setPos(QPointF(rec->pos().x() - rec->outlineRect().height()/2 + item->boundingRect().width()/2,
-                               rec->pos().y() - rec->outlineRect().height()/2 +item->boundingRect().height()*1.5));
-    scene->addItem(rec->yuan2);
+    //item->setPos(QPointF(rec->pos().x()-rec->outlineRect().width()/2,
+     //                    (rec->pos().y() - rec->outlineRect().height()/2)));
+    //item->setZValue(rec->zValue()+1);
+    //rec->box->addItem(tr("if"));
+    //rec->box->addItem(tr("else"));
+    //rec->box->addItem(tr("while"));
 
-    item->setPos(QPointF(rec->pos().x()-rec->outlineRect().width()/2,
-                         (rec->pos().y() - rec->outlineRect().height()/2)));
-    item->setZValue(rec->zValue()+1);
-    rec->box->addItem(tr("if"));
-    rec->box->addItem(tr("else"));
-    rec->box->addItem(tr("while"));
+    //recNodeNum++;
+    //rec->controlsId=recNodeNum;
 
-    recNodeNum++;
-    rec->controlsId=recNodeNum;
-
-    setDirty();
+    //setDirty();
 }
 
 /*******************************************************************
@@ -932,50 +992,98 @@ void DiagramWindow::addRec()
 void DiagramWindow::del()
 {
     QList<QGraphicsItem *> items = scene->selectedItems();
-    QMutableListIterator<QGraphicsItem *> i(items);
-    while (i.hasNext()) {
-        Link *link = dynamic_cast<Link *>(i.next());
-        if (link) {
-            delete link;
-            i.remove();
-        }
-    }
-    i.toFront();
-
-    while (i.hasNext())
+    int itemsCount = items.count();
+    int i=0;
+    QList<Link*>itemLinks;
+    for(i=0;i<itemsCount;i++)
     {
-        NewNode*node = dynamic_cast<NewNode*>(i.next());
-        if(node)
-        {
-            delete node;
-            i.remove();
-        }
+        if(dynamic_cast<Link*>(items[i]))
+            itemLinks<<dynamic_cast<Link*>(items[i]);
     }
-    i.toFront();
-    int a=0;
-    while (i.hasNext())
+    QList<TakeoffNode*>itemTakeoffs;
+    for(i=0;i<itemsCount;i++)
     {
-        Node*node = dynamic_cast<Node*>(i.next());
-        if(node)
-        {
-            a++;
-            qDebug()<<a;
-            delete node;
-            i.remove();
-        }
+        if(dynamic_cast<TakeoffNode*>(items[i]))
+            itemTakeoffs<<dynamic_cast<TakeoffNode*>(items[i]);
     }
-
-    i.toFront();
-    while (i.hasNext())
+    QList<LandonNode*>itemLandons;
+    for(i=0;i<itemsCount;i++)
     {
-        Rec*node = dynamic_cast<Rec*>(i.next());
-        if(node)
-        {
-            delete node;
-            i.remove();
-        }
+        if(dynamic_cast<LandonNode*>(items[i]))
+            itemLandons<<dynamic_cast<LandonNode*>(items[i]);
     }
-
+    QList<ComputeNode*>itemComputes;
+    for(i=0;i<itemsCount;i++)
+    {
+        if(dynamic_cast<ComputeNode*>(items[i]))
+            itemComputes<<dynamic_cast<ComputeNode*>(items[i]);
+    }
+    QList<IoNode*>itemIos;
+    for(i=0;i<itemsCount;i++)
+    {
+        if(dynamic_cast<IoNode*>(items[i]))
+            itemIos<<dynamic_cast<IoNode*>(items[i]);
+    }
+    QList<Rec*>itemRecs;
+    for(i=0;i<itemsCount;i++)
+    {
+        if(dynamic_cast<Rec*>(items[i]))
+            itemRecs<<dynamic_cast<Rec*>(items[i]);
+    }
+    QList<TranslationNode*>itemTranslations;
+    for(i=0;i<itemsCount;i++)
+    {
+        if(dynamic_cast<TranslationNode*>(items[i]))
+            itemTranslations<<dynamic_cast<TranslationNode*>(items[i]);
+    }
+    QList<SomeNode*>itemSomes;
+    for(i=0;i<itemsCount;i++)
+    {
+        if(dynamic_cast<SomeNode*>(items[i]))
+            itemSomes<<dynamic_cast<SomeNode*>(items[i]);
+    }
+    QList<VardefNode*>itemVardefs;
+    for(i=0;i<itemsCount;i++)
+    {
+        if(dynamic_cast<VardefNode*>(items[i]))
+            itemVardefs<<dynamic_cast<VardefNode*>(items[i]);
+    }
+    QList<VarNode*>itemVars;
+    for(i=0;i<itemsCount;i++)
+    {
+        if(dynamic_cast<VarNode*>(items[i]))
+            itemVars<<dynamic_cast<VarNode*>(items[i]);
+    }
+    foreach (Link* item, itemLinks) {
+        delete item;
+    }
+    foreach (TakeoffNode* item, itemTakeoffs) {
+        delete item;
+    }
+    foreach (LandonNode* item, itemLandons) {
+        delete item;
+    }
+    foreach (ComputeNode* item, itemComputes) {
+        delete item;
+    }
+    foreach (IoNode* item, itemIos) {
+        delete item;
+    }
+    foreach (Rec* item, itemRecs) {
+        delete item;
+    }
+    foreach (TranslationNode* item, itemTranslations) {
+        delete item;
+    }
+    foreach (SomeNode* item, itemSomes) {
+        delete item;
+    }
+    foreach (VardefNode* item, itemVardefs) {
+        delete item;
+    }
+    foreach (VarNode* item, itemVars) {
+        delete item;
+    }
 }
 
 
@@ -1380,6 +1488,28 @@ void DiagramWindow::createToolBars()
     aToolBar->addAction(addRecAction);
     aToolBar->addAction(addLinkAction);
     addToolBar(Qt::LeftToolBarArea,aToolBar);
+}
+
+/*******************************************************************
+ * Function name: createToolBars()
+ * Description: This function creates toolbars.
+ * Callee:
+ * Inputs:
+ * Outputs:
+******************************************************************/
+void DiagramWindow::createWidgetConditionBar()
+{
+    setDockOptions(DiagramWindow::AnimatedDocks);
+
+    QDockWidget::DockWidgetFeatures features=
+            QDockWidget::DockWidgetClosable;
+
+    QDockWidget *rightside = new QDockWidget(this);
+    WidgetCondition *widgetCondition = new WidgetCondition();
+    rightside->setWidget(widgetCondition);
+    rightside->setFeatures(features);
+    rightside->setAllowedAreas(Qt::RightDockWidgetArea);
+    addDockWidget(Qt::RightDockWidgetArea, rightside);
 }
 
 /*******************************************************************

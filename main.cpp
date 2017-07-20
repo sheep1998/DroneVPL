@@ -1,17 +1,20 @@
 /*******************************************************************
- * File:main.cpp
- * Author:
- * Desciption:This is a cpp file for developers, including many
- *     circumstances you may encounter during development.
+ * File: main.cpp
+ * Author: Ryan Feng
+ * Description: This is the main entrance of DroneVPL.
 ******************************************************************/
 #include <QApplication>
 
 #include "diagramwindow.h"
 
+DiagramWindow* view;
+
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
-    DiagramWindow view;
-    view.show();
+    DiagramWindow view1;
+    view = &view1;
+    view1.show();
+    view1.show();
     return app.exec();
 }
